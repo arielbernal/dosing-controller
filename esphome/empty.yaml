@@ -1,0 +1,28 @@
+esphome:
+  name: dosing-controller
+  friendly_name: "Dosing Controller"
+
+esp32:
+  board: esp32dev
+
+wifi:
+  ssid: YOUR_SSID
+  password: YOUR_PASSWORD
+  ap:
+    ssid: "DosingPump Fallback"
+    password: 12345
+
+logger:
+api:
+
+ota:
+  platform: esphome
+
+web_server:
+  port: 80
+  
+external_components:
+  - source:
+      type: local
+      path: components
+    components: [doser]

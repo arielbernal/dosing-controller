@@ -1,0 +1,6 @@
+# ESPHome / PlatformIO artifacts
+.esphome/
+.pio/
+.pioenvs/
+.piolibdeps/
+**/.DS_Store

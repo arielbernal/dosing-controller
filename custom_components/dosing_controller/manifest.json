@@ -1,0 +1,11 @@
+{
+  "domain": "dosing_controller",
+  "name": "Dosing Controller",
+  "version": "0.1.0",
+  "documentation": "https://example.com/your-docs",
+  "issue_tracker": "https://example.com/your-issues",
+  "requirements": [],
+  "codeowners": ["@your-github"],
+  "iot_class": "local_push",
+  "integration_type": "hub"
+}
