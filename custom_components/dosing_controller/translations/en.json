@@ -4,13 +4,14 @@
     "step": {
       "user": {
         "title": "Add a dosing pump",
-        "description": "Select the 'Dose Amount' number and 'Dose Now' button for this pump.",
+        "description": "Select which ESPHome dosing pump to configure. Found {pump_count} pump(s).",
         "data": {
-          "name": "Name",
-          "dose_number_entity_id": "Dose amount number entity",
-          "dose_button_entity_id": "Dose now button entity"
+          "pump": "Dosing Pump"
         }
       }
+    },
+    "error": {
+      "no_pumps_found": "No ESPHome dosing pumps found. Make sure your ESPHome device is connected and has dose amount (number) and dose button entities."
     }
   },
   "options": {
