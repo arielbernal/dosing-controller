@@ -13,9 +13,7 @@ class DosingConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
     async def async_step_user(self, user_input=None):
         if user_input is not None:
-            # Create the config entry
-            title = user_input[CONF_NAME]
-            return self.async_create_entry(title=title, data=user_input)
+            return self.async_create_entry(title=user_input[CONF_NAME], data=user_input)
 
         schema = vol.Schema({
             vol.Required(CONF_NAME): str,
@@ -31,5 +29,4 @@ class DosingOptionsFlow(config_entries.OptionsFlow):
     async def async_step_init(self, user_input=None):
         if user_input is not None:
             return self.async_create_entry(title="", data=user_input)
-        # Empty options form for now—just to prove it opens
         return self.async_show_form(step_id="init", data_schema=vol.Schema({}))

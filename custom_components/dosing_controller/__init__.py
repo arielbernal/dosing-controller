@@ -1,9 +1,8 @@
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
-from .const import DOMAIN  # DOMAIN = "dosing_controller"
+from .const import DOMAIN  # "dosing_controller"
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
-    # Minimal: just store the entry data. No other imports here.
     hass.data.setdefault(DOMAIN, {})[entry.entry_id] = dict(entry.data)
     return True
 
