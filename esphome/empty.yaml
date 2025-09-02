@@ -9,8 +9,8 @@ wifi:
   ssid: YOUR_SSID
   password: YOUR_PASSWORD
   ap:
-    ssid: "DosingPump Fallback"
-    password: 12345
+    ssid: "Dosing Pump Setup"
+    password: "dosingpump"
 
 logger:
 api:
@@ -20,6 +20,8 @@ ota:
 
 web_server:
   port: 80
+
+captive_portal:
   
 external_components:
   - source:

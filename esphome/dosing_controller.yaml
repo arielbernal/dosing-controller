@@ -9,14 +9,16 @@ wifi:
   ssid: YOUR_SSID
   password: YOUR_PASSWORD
   ap:
-    ssid: "DosingPump Fallback"
-    password: 12345
+    ssid: "Dosing Pump Setup"
+    password: "pump1234"
 
 logger:
 api:
 
 ota:
   platform: esphome
+
+captive_portal:
 
 web_server:
   port: 80
