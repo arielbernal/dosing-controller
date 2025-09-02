@@ -2,6 +2,7 @@
   "domain": "dosing_controller",
   "name": "Dosing Controller",
   "version": "0.1.0",
+  "config_flow": true,
   "documentation": "https://example.com/your-docs",
   "issue_tracker": "https://example.com/your-issues",
   "requirements": [],
