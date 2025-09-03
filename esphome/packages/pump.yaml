@@ -1,0 +1,204 @@
+substitutions:
+  pump_id: pump
+  pump_name: "Pump"
+  step_pin: GPIO0
+  dir_pin: GPIO0
+  sleep_pin: GPIO0
+  dir_inverted: "false"
+  sleep_inverted: "false"
+  max_speed: "3000"
+  acceleration: "1000"
+  deceleration: "1000"
+  dose_initial: "1.0"
+  steps_per_ml_initial: "12000"
+  step_rate_initial: "1400"
+  calibration_steps_initial: "80000"  # legacy, unused if using mL calibration
+  cal_expected_initial: "10.0"
+  cal_measured_initial: "10.0"
+  min_calibration_steps: "10000"
+  max_calibration_steps: "200000"
+
+# Stepper driver for ${pump_name}
+stepper:
+  - platform: a4988
+    id: ${pump_id}_stepper
+    step_pin: ${step_pin}
+    dir_pin:
+      number: ${dir_pin}
+      inverted: ${dir_inverted}
+    sleep_pin:
+      number: ${sleep_pin}
+      inverted: ${sleep_inverted}
+    max_speed: ${max_speed}
+    acceleration: ${acceleration}
+    deceleration: ${deceleration}
+
+# Doser component binding to the stepper
+doser:
+  - id: ${pump_id}_doser
+    stepper_id: ${pump_id}_stepper
+
+# Internal state for calibration workflow
+globals:
+  - id: ${pump_id}_calibration_ready
+    type: bool
+    restore_value: no
+    initial_value: 'false'
+  - id: ${pump_id}_calibration_spm_base
+    type: float
+    restore_value: no
+    initial_value: '0.0'
+  # Persistent storage for Steps-per-mL to survive OTA/reboots
+  - id: ${pump_id}_steps_per_ml_store
+    type: float
+    restore_value: yes
+    initial_value: ${steps_per_ml_initial}
+
+# Controls for ${pump_name}
+number:
+  - platform: template
+    id: ${pump_id}_dose_ml
+    name: "${pump_name} Dose Amount (mL)"
+    min_value: 0.1
+    max_value: 10.0
+    step: 0.1
+    optimistic: true
+    restore_value: true
+    initial_value: ${dose_initial}
+
+  - platform: template
+    id: ${pump_id}_steps_per_ml
+    name: "${pump_name} Steps per mL (Calibration)"
+    min_value: 8000
+    max_value: 20000
+    step: 10
+    mode: box
+    optimistic: true
+    restore_value: true
+    initial_value: ${steps_per_ml_initial}
+    on_value:
+      then:
+        - lambda: |-
+            // Mirror to persistent store so it survives OTA
+            id(${pump_id}_steps_per_ml_store) = x;
+
+  - platform: template
+    id: ${pump_id}_cal_expected_ml
+    name: "${pump_name} Calibration Target (mL)"
+    min_value: 1.0
+    max_value: 50.0
+    step: 0.5
+    optimistic: true
+    restore_value: true
+    initial_value: ${cal_expected_initial}
+
+  - platform: template
+    id: ${pump_id}_cal_measured_ml
+    name: "${pump_name} Calibration Measured (mL)"
+    min_value: 0.1
+    max_value: 100.0
+    step: 0.1
+    optimistic: true
+    restore_value: true
+    initial_value: ${cal_measured_initial}
+
+  - platform: template
+    id: ${pump_id}_step_rate
+    name: "${pump_name} Speed (steps/s)"
+    min_value: 200
+    max_value: 3000
+    step: 50
+    optimistic: true
+    restore_value: true
+    initial_value: ${step_rate_initial}
+
+button:
+  - platform: template
+    name: "${pump_name} Dose"
+    on_press:
+      - lambda: |-
+          id(${pump_id}_last_trigger).publish_state("Dose");
+          id(${pump_id}_doser).dose_ml(
+            id(${pump_id}_dose_ml).state,
+            id(${pump_id}_steps_per_ml).state,
+            id(${pump_id}_step_rate).state
+          );
+
+  - platform: template
+    name: "${pump_name} Calibration Run"
+    on_press:
+      - lambda: |-
+          // capture current SPM as base and arm apply
+          id(${pump_id}_calibration_spm_base) = id(${pump_id}_steps_per_ml).state;
+          id(${pump_id}_calibration_ready) = true;
+          id(${pump_id}_last_trigger).publish_state("Calibrate");
+          id(${pump_id}_doser).dose_ml(
+            id(${pump_id}_cal_expected_ml).state,
+            id(${pump_id}_steps_per_ml).state,
+            id(${pump_id}_step_rate).state
+          );
+
+  - platform: template
+    name: "${pump_name} Calibration Apply"
+    on_press:
+      - lambda: |-
+          if (!id(${pump_id}_calibration_ready)) {
+            ESP_LOGW("CAL", "Apply ignored: calibration not armed. Run calibration first.");
+            return;
+          }
+          const float expected = id(${pump_id}_cal_expected_ml).state;
+          const float measured = id(${pump_id}_cal_measured_ml).state;
+          const float base_spm = id(${pump_id}_calibration_spm_base);
+          if (measured > 0.0f && base_spm > 0.0f) {
+            float new_spm = base_spm * (expected / measured);
+            // clamp to configured bounds
+            if (new_spm < 8000.0f) new_spm = 8000.0f;
+            if (new_spm > 20000.0f) new_spm = 20000.0f;
+            id(${pump_id}_steps_per_ml).publish_state(new_spm);
+            id(${pump_id}_steps_per_ml_store) = new_spm;  // persist
+            id(${pump_id}_calibration_ready) = false;  // disarm until next run
+          } else {
+            ESP_LOGW("CAL", "Apply ignored: invalid measured volume (%.3f) or base SPM (%.1f).", measured, base_spm);
+          }
+
+  - platform: template
+    name: "${pump_name} Stop"
+    on_press:
+      - lambda: |-
+          id(${pump_id}_last_trigger).publish_state("Stopped");
+          id(${pump_id}_doser).stop();
+
+binary_sensor:
+  - platform: template
+    id: ${pump_id}_busy
+    name: "${pump_name} Busy"
+    device_class: running
+
+esphome:
+  on_boot:
+    priority: 600
+    then:
+      - lambda: |-
+          // Restore Steps-per-mL from persistent store explicitly
+          if (id(${pump_id}_steps_per_ml_store) > 0.0f) {
+            id(${pump_id}_steps_per_ml).publish_state(id(${pump_id}_steps_per_ml_store));
+          }
+
+interval:
+  - interval: 500ms
+    then:
+      - lambda: |-
+          id(${pump_id}_busy).publish_state(id(${pump_id}_doser).is_busy());
+
+text_sensor:
+  - platform: template
+    id: ${pump_id}_last_trigger
+    name: "${pump_name} Last Trigger"
+    icon: mdi:information-outline
+
+switch:
+  - platform: template
+    id: ${pump_id}_calibration_menu
+    name: "${pump_name} Calibration Menu"
+    restore_mode: RESTORE_DEFAULT_OFF
+    optimistic: true

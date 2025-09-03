@@ -1,0 +1,501 @@
+# Dashboard card for dosing pumps (no HA helpers required)
+
+type: vertical-stack
+title: Dosing Controller
+cards:
+  # PUMP 1
+  - type: vertical-stack
+    title: Pump 1
+    cards:
+      - type: entities
+        entities:
+          - entity: number.dosing_controller_pump_1_dose_amount_ml
+            name: Dose Amount (mL)
+          - entity: binary_sensor.dosing_controller_pump_1_busy
+            name: Running
+          - entity: sensor.dosing_controller_pump_1_last_trigger
+            name: Last Trigger
+      - type: horizontal-stack
+        cards:
+          - type: button
+            name: Dose Now
+            icon: mdi:eyedropper
+            icon_height: 24px
+            entity: button.dosing_controller_pump_1_dose
+            tap_action:
+              action: call-service
+              service: button.press
+              target:
+                entity_id: button.dosing_controller_pump_1_dose
+          - type: button
+            name: Stop
+            icon: mdi:close-octagon-outline
+            icon_height: 24px
+            entity: button.dosing_controller_pump_1_stop
+            tap_action:
+              action: call-service
+              service: button.press
+              target:
+                entity_id: button.dosing_controller_pump_1_stop
+      - type: horizontal-stack
+        cards:
+          - type: button
+            name: Schedules
+            icon: mdi:calendar-clock
+            icon_height: 22px
+            entity: input_boolean.pump1_show_schedules
+            tap_action: { action: toggle }
+          - type: button
+            name: Configuration
+            icon: mdi:tune
+            icon_height: 22px
+            entity: input_boolean.pump1_show_calibration
+            tap_action: { action: toggle }
+      - type: conditional
+        conditions:
+          - entity: input_boolean.pump1_show_schedules
+            state: "on"
+        card:
+          type: vertical-stack
+          cards:
+            # Schedule 1
+            - type: entities
+              title: Schedule 1
+              entities:
+                - entity: switch.dosing_controller_pump_1_schedule_1_enabled
+                  name: Enabled
+                - entity: number.dosing_controller_pump_1_schedule_1_amount_ml
+                  name: Amount (mL)
+                - entity: input_datetime.pump1_schedule_1_time
+                  name: Time
+            - type: horizontal-stack
+              cards:
+                - type: button
+                  entity: switch.dosing_controller_pump_1_schedule_1_monday
+                  name: Mon
+                  tap_action: { action: toggle }
+                - type: button
+                  entity: switch.dosing_controller_pump_1_schedule_1_tuesday
+                  name: Tue
+                  tap_action: { action: toggle }
+                - type: button
+                  entity: switch.dosing_controller_pump_1_schedule_1_wednesday
+                  name: Wed
+                  tap_action: { action: toggle }
+                - type: button
+                  entity: switch.dosing_controller_pump_1_schedule_1_thursday
+                  name: Thu
+                  tap_action: { action: toggle }
+                - type: button
+                  entity: switch.dosing_controller_pump_1_schedule_1_friday
+                  name: Fri
+                  tap_action: { action: toggle }
+                - type: button
+                  entity: switch.dosing_controller_pump_1_schedule_1_saturday
+                  name: Sat
+                  tap_action: { action: toggle }
+                - type: button
+                  entity: switch.dosing_controller_pump_1_schedule_1_sunday
+                  name: Sun
+                  tap_action: { action: toggle }
+
+            # Schedule 2
+            - type: entities
+              title: Schedule 2
+              entities:
+                - entity: switch.dosing_controller_pump_1_schedule_2_enabled
+                  name: Enabled
+                - entity: number.dosing_controller_pump_1_schedule_2_amount_ml
+                  name: Amount (mL)
+                - entity: input_datetime.pump1_schedule_2_time
+                  name: Time
+            - type: horizontal-stack
+              cards:
+                - type: button
+                  entity: switch.dosing_controller_pump_1_schedule_2_monday
+                  name: Mon
+                  tap_action: { action: toggle }
+                - type: button
+                  entity: switch.dosing_controller_pump_1_schedule_2_tuesday
+                  name: Tue
+                  tap_action: { action: toggle }
+                - type: button
+                  entity: switch.dosing_controller_pump_1_schedule_2_wednesday
+                  name: Wed
+                  tap_action: { action: toggle }
+                - type: button
+                  entity: switch.dosing_controller_pump_1_schedule_2_thursday
+                  name: Thu
+                  tap_action: { action: toggle }
+                - type: button
+                  entity: switch.dosing_controller_pump_1_schedule_2_friday
+                  name: Fri
+                  tap_action: { action: toggle }
+                - type: button
+                  entity: switch.dosing_controller_pump_1_schedule_2_saturday
+                  name: Sat
+                  tap_action: { action: toggle }
+                - type: button
+                  entity: switch.dosing_controller_pump_1_schedule_2_sunday
+                  name: Sun
+                  tap_action: { action: toggle }
+
+            # Schedule 3
+            - type: entities
+              title: Schedule 3
+              entities:
+                - entity: switch.dosing_controller_pump_1_schedule_3_enabled
+                  name: Enabled
+                - entity: number.dosing_controller_pump_1_schedule_3_amount_ml
+                  name: Amount (mL)
+                - entity: input_datetime.pump1_schedule_3_time
+                  name: Time
+            - type: horizontal-stack
+              cards:
+                - type: button
+                  entity: switch.dosing_controller_pump_1_schedule_3_monday
+                  name: Mon
+                  tap_action: { action: toggle }
+                - type: button
+                  entity: switch.dosing_controller_pump_1_schedule_3_tuesday
+                  name: Tue
+                  tap_action: { action: toggle }
+                - type: button
+                  entity: switch.dosing_controller_pump_1_schedule_3_wednesday
+                  name: Wed
+                  tap_action: { action: toggle }
+                - type: button
+                  entity: switch.dosing_controller_pump_1_schedule_3_thursday
+                  name: Thu
+                  tap_action: { action: toggle }
+                - type: button
+                  entity: switch.dosing_controller_pump_1_schedule_3_friday
+                  name: Fri
+                  tap_action: { action: toggle }
+                - type: button
+                  entity: switch.dosing_controller_pump_1_schedule_3_saturday
+                  name: Sat
+                  tap_action: { action: toggle }
+                - type: button
+                  entity: switch.dosing_controller_pump_1_schedule_3_sunday
+                  name: Sun
+                  tap_action: { action: toggle }
+      
+      - type: conditional
+        conditions:
+          - entity: input_boolean.pump1_show_calibration
+            state: "on"
+        card:
+          type: vertical-stack
+          cards:
+            - type: entities
+              entities:
+                - entity: number.dosing_controller_pump_1_steps_per_ml_calibration
+                  name: Steps per mL
+                - entity: number.dosing_controller_pump_1_speed_steps_s
+                  name: Speed (steps/s)
+                - entity: number.dosing_controller_pump_1_calibration_target_ml
+                  name: Calibration Target (mL)
+                - entity: number.dosing_controller_pump_1_calibration_measured_ml
+                  name: Calibration Measured (mL)
+            - type: conditional
+              conditions:
+                - entity: binary_sensor.dosing_controller_pump_1_busy
+                  state: 'on'
+              card:
+                type: horizontal-stack
+                cards:
+                  - type: button
+                    name: Running...
+                    icon: mdi:progress-clock
+                    entity: binary_sensor.dosing_controller_pump_1_busy
+                    tap_action:
+                      action: call-service
+                      service: button.press
+                      target:
+                        entity_id: button.dosing_controller_pump_1_calibration_run
+                  - type: button
+                    name: Save
+                    icon: mdi:content-save
+                    icon_height: 20px
+                    entity: button.dosing_controller_pump_1_calibration_apply
+                    tap_action:
+                      action: call-service
+                      service: button.press
+                      target:
+                        entity_id: button.dosing_controller_pump_1_calibration_apply
+            - type: conditional
+              conditions:
+                - entity: binary_sensor.dosing_controller_pump_1_busy
+                  state: 'off'
+              card:
+                type: horizontal-stack
+                cards:
+                  - type: button
+                    name: Calibrate
+                    icon: mdi:beaker-outline
+                    icon_height: 20px
+                    entity: binary_sensor.dosing_controller_pump_1_busy
+                    tap_action:
+                      action: call-service
+                      service: button.press
+                      target:
+                        entity_id: button.dosing_controller_pump_1_calibration_run
+                  - type: button
+                    name: Save
+                    icon: mdi:content-save
+                    icon_height: 20px
+                    entity: button.dosing_controller_pump_1_calibration_apply
+                    tap_action:
+                      action: call-service
+                      service: button.press
+                      target:
+                        entity_id: button.dosing_controller_pump_1_calibration_apply
+
+  # PUMP 2
+  - type: vertical-stack
+    title: Pump 2
+    cards:
+      - type: entities
+        entities:
+          - entity: number.dosing_controller_pump_2_dose_amount_ml
+            name: Dose Amount (mL)
+          - entity: binary_sensor.dosing_controller_pump_2_busy
+            name: Running
+          - entity: sensor.dosing_controller_pump_2_last_trigger
+            name: Last Trigger
+      - type: horizontal-stack
+        cards:
+          - type: button
+            name: Dose Now
+            icon: mdi:eyedropper
+            icon_height: 24px
+            entity: button.dosing_controller_pump_2_dose
+            tap_action:
+              action: call-service
+              service: button.press
+              target:
+                entity_id: button.dosing_controller_pump_2_dose
+          - type: button
+            name: Stop
+            icon: mdi:close-octagon-outline
+            icon_height: 24px
+            entity: button.dosing_controller_pump_2_stop
+            tap_action:
+              action: call-service
+              service: button.press
+              target:
+                entity_id: button.dosing_controller_pump_2_stop
+      - type: horizontal-stack
+        cards:
+          - type: button
+            name: Schedules
+            icon: mdi:calendar-clock
+            icon_height: 22px
+            entity: input_boolean.pump2_show_schedules
+            tap_action: { action: toggle }
+          - type: button
+            name: Configuration
+            icon: mdi:tune
+            icon_height: 22px
+            entity: input_boolean.pump2_show_calibration
+            tap_action: { action: toggle }
+      - type: conditional
+        conditions:
+          - entity: input_boolean.pump2_show_schedules
+            state: "on"
+        card:
+          type: vertical-stack
+          cards:
+            # Schedule 1
+            - type: entities
+              title: Schedule 1
+              entities:
+                - entity: switch.dosing_controller_pump_2_schedule_1_enabled
+                  name: Enabled
+                - entity: number.dosing_controller_pump_2_schedule_1_amount_ml
+                  name: Amount (mL)
+                - entity: input_datetime.pump2_schedule_1_time
+                  name: Time
+            - type: horizontal-stack
+              cards:
+                - type: button
+                  entity: switch.dosing_controller_pump_2_schedule_1_monday
+                  name: Mon
+                  tap_action: { action: toggle }
+                - type: button
+                  entity: switch.dosing_controller_pump_2_schedule_1_tuesday
+                  name: Tue
+                  tap_action: { action: toggle }
+                - type: button
+                  entity: switch.dosing_controller_pump_2_schedule_1_wednesday
+                  name: Wed
+                  tap_action: { action: toggle }
+                - type: button
+                  entity: switch.dosing_controller_pump_2_schedule_1_thursday
+                  name: Thu
+                  tap_action: { action: toggle }
+                - type: button
+                  entity: switch.dosing_controller_pump_2_schedule_1_friday
+                  name: Fri
+                  tap_action: { action: toggle }
+                - type: button
+                  entity: switch.dosing_controller_pump_2_schedule_1_saturday
+                  name: Sat
+                  tap_action: { action: toggle }
+                - type: button
+                  entity: switch.dosing_controller_pump_2_schedule_1_sunday
+                  name: Sun
+                  tap_action: { action: toggle }
+
+            # Schedule 2
+            - type: entities
+              title: Schedule 2
+              entities:
+                - entity: switch.dosing_controller_pump_2_schedule_2_enabled
+                  name: Enabled
+                - entity: number.dosing_controller_pump_2_schedule_2_amount_ml
+                  name: Amount (mL)
+                - entity: input_datetime.pump2_schedule_2_time
+                  name: Time
+            - type: horizontal-stack
+              cards:
+                - type: button
+                  entity: switch.dosing_controller_pump_2_schedule_2_monday
+                  name: Mon
+                  tap_action: { action: toggle }
+                - type: button
+                  entity: switch.dosing_controller_pump_2_schedule_2_tuesday
+                  name: Tue
+                  tap_action: { action: toggle }
+                - type: button
+                  entity: switch.dosing_controller_pump_2_schedule_2_wednesday
+                  name: Wed
+                  tap_action: { action: toggle }
+                - type: button
+                  entity: switch.dosing_controller_pump_2_schedule_2_thursday
+                  name: Thu
+                  tap_action: { action: toggle }
+                - type: button
+                  entity: switch.dosing_controller_pump_2_schedule_2_friday
+                  name: Fri
+                  tap_action: { action: toggle }
+                - type: button
+                  entity: switch.dosing_controller_pump_2_schedule_2_saturday
+                  name: Sat
+                  tap_action: { action: toggle }
+                - type: button
+                  entity: switch.dosing_controller_pump_2_schedule_2_sunday
+                  name: Sun
+                  tap_action: { action: toggle }
+
+            # Schedule 3
+            - type: entities
+              title: Schedule 3
+              entities:
+                - entity: switch.dosing_controller_pump_2_schedule_3_enabled
+                  name: Enabled
+                - entity: number.dosing_controller_pump_2_schedule_3_amount_ml
+                  name: Amount (mL)
+                - entity: input_datetime.pump2_schedule_3_time
+                  name: Time
+            - type: horizontal-stack
+              cards:
+                - type: button
+                  entity: switch.dosing_controller_pump_2_schedule_3_monday
+                  name: Mon
+                  tap_action: { action: toggle }
+                - type: button
+                  entity: switch.dosing_controller_pump_2_schedule_3_tuesday
+                  name: Tue
+                  tap_action: { action: toggle }
+                - type: button
+                  entity: switch.dosing_controller_pump_2_schedule_3_wednesday
+                  name: Wed
+                  tap_action: { action: toggle }
+                - type: button
+                  entity: switch.dosing_controller_pump_2_schedule_3_thursday
+                  name: Thu
+                  tap_action: { action: toggle }
+                - type: button
+                  entity: switch.dosing_controller_pump_2_schedule_3_friday
+                  name: Fri
+                  tap_action: { action: toggle }
+                - type: button
+                  entity: switch.dosing_controller_pump_2_schedule_3_saturday
+                  name: Sat
+                  tap_action: { action: toggle }
+                - type: button
+                  entity: switch.dosing_controller_pump_2_schedule_3_sunday
+                  name: Sun
+                  tap_action: { action: toggle }
+      - type: conditional
+        conditions:
+          - entity: input_boolean.pump2_show_calibration
+            state: "on"
+        card:
+          type: vertical-stack
+          cards:
+            - type: entities
+              entities:
+                - entity: number.dosing_controller_pump_2_steps_per_ml_calibration
+                  name: Steps per mL
+                - entity: number.dosing_controller_pump_2_speed_steps_s
+                  name: Speed (steps/s)
+                - entity: number.dosing_controller_pump_2_calibration_target_ml
+                  name: Calibration Target (mL)
+                - entity: number.dosing_controller_pump_2_calibration_measured_ml
+                  name: Calibration Measured (mL)
+            - type: conditional
+              conditions:
+                - entity: binary_sensor.dosing_controller_pump_2_busy
+                  state: 'on'
+              card:
+                type: horizontal-stack
+                cards:
+                  - type: button
+                    name: Running...
+                    icon: mdi:progress-clock
+                    entity: binary_sensor.dosing_controller_pump_2_busy
+                    tap_action:
+                      action: call-service
+                      service: button.press
+                      target:
+                        entity_id: button.dosing_controller_pump_2_calibration_run
+                  - type: button
+                    name: Save
+                    icon: mdi:content-save
+                    icon_height: 20px
+                    entity: button.dosing_controller_pump_2_calibration_apply
+                    tap_action:
+                      action: call-service
+                      service: button.press
+                      target:
+                        entity_id: button.dosing_controller_pump_2_calibration_apply
+            - type: conditional
+              conditions:
+                - entity: binary_sensor.dosing_controller_pump_2_busy
+                  state: 'off'
+              card:
+                type: horizontal-stack
+                cards:
+                  - type: button
+                    name: Calibrate
+                    icon: mdi:beaker-outline
+                    icon_height: 20px
+                    entity: binary_sensor.dosing_controller_pump_2_busy
+                    tap_action:
+                      action: call-service
+                      service: button.press
+                      target:
+                        entity_id: button.dosing_controller_pump_2_calibration_run
+                  - type: button
+                    name: Save
+                    icon: mdi:content-save
+                    icon_height: 20px
+                    entity: button.dosing_controller_pump_2_calibration_apply
+                    tap_action:
+                      action: call-service
+                      service: button.press
+                      target:
+                        entity_id: button.dosing_controller_pump_2_calibration_apply

@@ -1,0 +1,314 @@
+substitutions:
+  pump_id: pump1
+  pump_name: "Pump 1"
+
+number:
+  # Schedule 1
+  - platform: template
+    id: ${pump_id}_schedule_1_amount_ml
+    name: "${pump_name} Schedule 1 Amount (mL)"
+    min_value: 0.1
+    max_value: 20.0
+    step: 0.1
+    restore_value: true
+    optimistic: true
+    initial_value: 1.0
+  - platform: template
+    id: ${pump_id}_schedule_1_hour
+    name: "${pump_name} Schedule 1 Hour"
+    min_value: 0
+    max_value: 23
+    step: 1
+    restore_value: true
+    optimistic: true
+    initial_value: 9
+    internal: true
+  - platform: template
+    id: ${pump_id}_schedule_1_minute
+    name: "${pump_name} Schedule 1 Minute"
+    min_value: 0
+    max_value: 59
+    step: 1
+    restore_value: true
+    optimistic: true
+    initial_value: 0
+    internal: true
+
+  # Schedule 2
+  - platform: template
+    id: ${pump_id}_schedule_2_amount_ml
+    name: "${pump_name} Schedule 2 Amount (mL)"
+    min_value: 0.1
+    max_value: 20.0
+    step: 0.1
+    restore_value: true
+    optimistic: true
+    initial_value: 1.0
+  - platform: template
+    id: ${pump_id}_schedule_2_hour
+    name: "${pump_name} Schedule 2 Hour"
+    min_value: 0
+    max_value: 23
+    step: 1
+    restore_value: true
+    optimistic: true
+    initial_value: 14
+    internal: true
+  - platform: template
+    id: ${pump_id}_schedule_2_minute
+    name: "${pump_name} Schedule 2 Minute"
+    min_value: 0
+    max_value: 59
+    step: 1
+    restore_value: true
+    optimistic: true
+    initial_value: 0
+    internal: true
+
+  # Schedule 3
+  - platform: template
+    id: ${pump_id}_schedule_3_amount_ml
+    name: "${pump_name} Schedule 3 Amount (mL)"
+    min_value: 0.1
+    max_value: 20.0
+    step: 0.1
+    restore_value: true
+    optimistic: true
+    initial_value: 1.0
+  - platform: template
+    id: ${pump_id}_schedule_3_hour
+    name: "${pump_name} Schedule 3 Hour"
+    min_value: 0
+    max_value: 23
+    step: 1
+    restore_value: true
+    optimistic: true
+    initial_value: 20
+    internal: true
+  - platform: template
+    id: ${pump_id}_schedule_3_minute
+    name: "${pump_name} Schedule 3 Minute"
+    min_value: 0
+    max_value: 59
+    step: 1
+    restore_value: true
+    optimistic: true
+    initial_value: 0
+    internal: true
+ 
+text_sensor:
+  # Read HA input_datetime states and sync to hour/min
+  - platform: homeassistant
+    id: ${pump_id}_schedule_1_time_ha
+    entity_id: input_datetime.${pump_id}_schedule_1_time
+    on_value:
+      then:
+        - lambda: |-
+            int h = 0, m = 0, s = 0;
+            if (sscanf(x.c_str(), "%d:%d:%d", &h, &m, &s) >= 2) {
+              h = h < 0 ? 0 : (h > 23 ? 23 : h);
+              m = m < 0 ? 0 : (m > 59 ? 59 : m);
+              id(${pump_id}_schedule_1_hour).publish_state(h);
+              id(${pump_id}_schedule_1_minute).publish_state(m);
+            }
+  - platform: homeassistant
+    id: ${pump_id}_schedule_2_time_ha
+    entity_id: input_datetime.${pump_id}_schedule_2_time
+    on_value:
+      then:
+        - lambda: |-
+            int h = 0, m = 0, s = 0;
+            if (sscanf(x.c_str(), "%d:%d:%d", &h, &m, &s) >= 2) {
+              h = h < 0 ? 0 : (h > 23 ? 23 : h);
+              m = m < 0 ? 0 : (m > 59 ? 59 : m);
+              id(${pump_id}_schedule_2_hour).publish_state(h);
+              id(${pump_id}_schedule_2_minute).publish_state(m);
+            }
+  - platform: homeassistant
+    id: ${pump_id}_schedule_3_time_ha
+    entity_id: input_datetime.${pump_id}_schedule_3_time
+    on_value:
+      then:
+        - lambda: |-
+            int h = 0, m = 0, s = 0;
+            if (sscanf(x.c_str(), "%d:%d:%d", &h, &m, &s) >= 2) {
+              h = h < 0 ? 0 : (h > 23 ? 23 : h);
+              m = m < 0 ? 0 : (m > 59 ? 59 : m);
+              id(${pump_id}_schedule_3_hour).publish_state(h);
+              id(${pump_id}_schedule_3_minute).publish_state(m);
+            }
+
+switch:
+  # Enables
+  - platform: template
+    id: ${pump_id}_schedule_1_enabled
+    name: "${pump_name} Schedule 1 Enabled"
+    restore_mode: RESTORE_DEFAULT_OFF
+    optimistic: true
+  - platform: template
+    id: ${pump_id}_schedule_2_enabled
+    name: "${pump_name} Schedule 2 Enabled"
+    restore_mode: RESTORE_DEFAULT_OFF
+    optimistic: true
+  - platform: template
+    id: ${pump_id}_schedule_3_enabled
+    name: "${pump_name} Schedule 3 Enabled"
+    restore_mode: RESTORE_DEFAULT_OFF
+    optimistic: true
+
+  # Day-of-week toggles per schedule
+  # Schedule 1
+  - platform: template
+    id: ${pump_id}_schedule_1_monday
+    name: "${pump_name} Schedule 1 Monday"
+    restore_mode: RESTORE_DEFAULT_OFF
+    optimistic: true
+  - platform: template
+    id: ${pump_id}_schedule_1_tuesday
+    name: "${pump_name} Schedule 1 Tuesday"
+    restore_mode: RESTORE_DEFAULT_OFF
+    optimistic: true
+  - platform: template
+    id: ${pump_id}_schedule_1_wednesday
+    name: "${pump_name} Schedule 1 Wednesday"
+    restore_mode: RESTORE_DEFAULT_OFF
+    optimistic: true
+  - platform: template
+    id: ${pump_id}_schedule_1_thursday
+    name: "${pump_name} Schedule 1 Thursday"
+    restore_mode: RESTORE_DEFAULT_OFF
+    optimistic: true
+  - platform: template
+    id: ${pump_id}_schedule_1_friday
+    name: "${pump_name} Schedule 1 Friday"
+    restore_mode: RESTORE_DEFAULT_OFF
+    optimistic: true
+  - platform: template
+    id: ${pump_id}_schedule_1_saturday
+    name: "${pump_name} Schedule 1 Saturday"
+    restore_mode: RESTORE_DEFAULT_OFF
+    optimistic: true
+  - platform: template
+    id: ${pump_id}_schedule_1_sunday
+    name: "${pump_name} Schedule 1 Sunday"
+    restore_mode: RESTORE_DEFAULT_OFF
+    optimistic: true
+
+  # Schedule 2
+  - platform: template
+    id: ${pump_id}_schedule_2_monday
+    name: "${pump_name} Schedule 2 Monday"
+    restore_mode: RESTORE_DEFAULT_OFF
+    optimistic: true
+  - platform: template
+    id: ${pump_id}_schedule_2_tuesday
+    name: "${pump_name} Schedule 2 Tuesday"
+    restore_mode: RESTORE_DEFAULT_OFF
+    optimistic: true
+  - platform: template
+    id: ${pump_id}_schedule_2_wednesday
+    name: "${pump_name} Schedule 2 Wednesday"
+    restore_mode: RESTORE_DEFAULT_OFF
+    optimistic: true
+  - platform: template
+    id: ${pump_id}_schedule_2_thursday
+    name: "${pump_name} Schedule 2 Thursday"
+    restore_mode: RESTORE_DEFAULT_OFF
+    optimistic: true
+  - platform: template
+    id: ${pump_id}_schedule_2_friday
+    name: "${pump_name} Schedule 2 Friday"
+    restore_mode: RESTORE_DEFAULT_OFF
+    optimistic: true
+  - platform: template
+    id: ${pump_id}_schedule_2_saturday
+    name: "${pump_name} Schedule 2 Saturday"
+    restore_mode: RESTORE_DEFAULT_OFF
+    optimistic: true
+  - platform: template
+    id: ${pump_id}_schedule_2_sunday
+    name: "${pump_name} Schedule 2 Sunday"
+    restore_mode: RESTORE_DEFAULT_OFF
+    optimistic: true
+
+  # Schedule 3
+  - platform: template
+    id: ${pump_id}_schedule_3_monday
+    name: "${pump_name} Schedule 3 Monday"
+    restore_mode: RESTORE_DEFAULT_OFF
+    optimistic: true
+  - platform: template
+    id: ${pump_id}_schedule_3_tuesday
+    name: "${pump_name} Schedule 3 Tuesday"
+    restore_mode: RESTORE_DEFAULT_OFF
+    optimistic: true
+  - platform: template
+    id: ${pump_id}_schedule_3_wednesday
+    name: "${pump_name} Schedule 3 Wednesday"
+    restore_mode: RESTORE_DEFAULT_OFF
+    optimistic: true
+  - platform: template
+    id: ${pump_id}_schedule_3_thursday
+    name: "${pump_name} Schedule 3 Thursday"
+    restore_mode: RESTORE_DEFAULT_OFF
+    optimistic: true
+  - platform: template
+    id: ${pump_id}_schedule_3_friday
+    name: "${pump_name} Schedule 3 Friday"
+    restore_mode: RESTORE_DEFAULT_OFF
+    optimistic: true
+  - platform: template
+    id: ${pump_id}_schedule_3_saturday
+    name: "${pump_name} Schedule 3 Saturday"
+    restore_mode: RESTORE_DEFAULT_OFF
+    optimistic: true
+  - platform: template
+    id: ${pump_id}_schedule_3_sunday
+    name: "${pump_name} Schedule 3 Sunday"
+    restore_mode: RESTORE_DEFAULT_OFF
+    optimistic: true
+
+doser_scheduler:
+  - id: ${pump_id}_scheduler
+    doser_id: ${pump_id}_doser
+    time_id: sntp_time
+    steps_per_ml: ${pump_id}_steps_per_ml
+    speed: ${pump_id}_step_rate
+    last_trigger: ${pump_id}_last_trigger
+    schedules:
+      # Schedule 1
+      - ml: ${pump_id}_schedule_1_amount_ml
+        hour: ${pump_id}_schedule_1_hour
+        minute: ${pump_id}_schedule_1_minute
+        enabled: ${pump_id}_schedule_1_enabled
+        mon: ${pump_id}_schedule_1_monday
+        tue: ${pump_id}_schedule_1_tuesday
+        wed: ${pump_id}_schedule_1_wednesday
+        thu: ${pump_id}_schedule_1_thursday
+        fri: ${pump_id}_schedule_1_friday
+        sat: ${pump_id}_schedule_1_saturday
+        sun: ${pump_id}_schedule_1_sunday
+      # Schedule 2
+      - ml: ${pump_id}_schedule_2_amount_ml
+        hour: ${pump_id}_schedule_2_hour
+        minute: ${pump_id}_schedule_2_minute
+        enabled: ${pump_id}_schedule_2_enabled
+        mon: ${pump_id}_schedule_2_monday
+        tue: ${pump_id}_schedule_2_tuesday
+        wed: ${pump_id}_schedule_2_wednesday
+        thu: ${pump_id}_schedule_2_thursday
+        fri: ${pump_id}_schedule_2_friday
+        sat: ${pump_id}_schedule_2_saturday
+        sun: ${pump_id}_schedule_2_sunday
+      # Schedule 3
+      - ml: ${pump_id}_schedule_3_amount_ml
+        hour: ${pump_id}_schedule_3_hour
+        minute: ${pump_id}_schedule_3_minute
+        enabled: ${pump_id}_schedule_3_enabled
+        mon: ${pump_id}_schedule_3_monday
+        tue: ${pump_id}_schedule_3_tuesday
+        wed: ${pump_id}_schedule_3_wednesday
+        thu: ${pump_id}_schedule_3_thursday
+        fri: ${pump_id}_schedule_3_friday
+        sat: ${pump_id}_schedule_3_saturday
+        sun: ${pump_id}_schedule_3_sunday

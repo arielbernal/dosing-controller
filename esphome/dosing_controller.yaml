@@ -7,7 +7,7 @@ esp32:
 
 wifi:
   ssid: YOUR_SSID
-  password: YOUR_PASSWORD
+  password: YOUR_PASSWORDs
   ap:
     ssid: "Dosing Pump Setup"
     password: "pump1234"
@@ -23,171 +23,44 @@ captive_portal:
 web_server:
   port: 80
   
+time:
+  - platform: sntp
+    id: sntp_time
+
 external_components:
   - source:
       type: local
       path: components
-    components: [doser]
+    components: [doser, doser_scheduler]
 
-# ---------- Stepper ----------
-stepper:
-  - platform: a4988
-    id: pump1_stepper
-    step_pin: GPIO26
-    dir_pin:
-      number: GPIO27
-      inverted: true
-    sleep_pin:
-      number: GPIO25
-      inverted: true
-    max_speed: 3000   # steps/s
-    acceleration: 1000
-    deceleration: 1000
-
-  - platform: a4988  # Pump 2
-    id: pump2_stepper
-    step_pin: GPIO19
-    dir_pin: 
-      number: GPIO21
-      inverted: true
-    sleep_pin:
-      number: GPIO18
-      inverted: true
-    max_speed: 3000
-    acceleration: 1000
-    deceleration: 1000
-
-# ---------- Instantiate C++ class ----------
-doser:
-  - id: pump1_doser
-    stepper_id: pump1_stepper
-  - id: pump2_doser
-    stepper_id: pump2_stepper
-
-# ---------- Controls ----------
-number:
-  - platform: template
-    id: pump1_dose_ml
-    name: "Pump1 Dose Amount (mL)"
-    min_value: 0.1
-    max_value: 10.0
-    step: 0.1
-    optimistic: true
-    restore_value: true
-    initial_value: 1.0
-
-  - platform: template
-    id: pump1_steps_per_ml
-    name: "Pump1 Steps per mL (Calibration)"
-    min_value: 8000
-    max_value: 20000
-    step: 10
-    mode: box
-    optimistic: true
-    restore_value: true
-    initial_value: 12000
-
-  - platform: template
-    id: pump1_calibration_steps
-    name: "Pump1 Calibration Steps"
-    min_value: 2000
-    max_value: 120000
-    step: 1000
-    optimistic: true
-    restore_value: true
-    initial_value: 80000
-
-  - platform: template
-    id: pump1_step_rate
-    name: "Pump1 Speed (steps/s)"
-    min_value: 200
-    max_value: 3000
-    step: 50
-    optimistic: true
-    restore_value: true
-    initial_value: 800
-
-  - platform: template
-    id: pump2_dose_ml
-    name: "Pump2 Dose Amount (mL)"
-    min_value: 0.1
-    max_value: 10.0
-    step: 0.1
-    optimistic: true
-    restore_value: true
-    initial_value: 1.0
-
-  - platform: template
-    id: pump2_steps_per_ml
-    name: "Pump2 Steps per mL (Calibration)"
-    min_value: 8000
-    max_value: 20000
-    step: 10
-    mode: box
-    optimistic: true
-    restore_value: true
-    initial_value: 12000
-
-  - platform: template
-    id: pump2_calibration_steps
-    name: "Pump2 Calibration Steps"
-    min_value: 2000
-    max_value: 120000
-    step: 1000
-    optimistic: true
-    restore_value: true
-    initial_value: 80000
-
-  - platform: template
-    id: pump2_step_rate
-    name: "Pump2 Speed (steps/s)"
-    min_value: 200
-    max_value: 3000
-    step: 50
-    optimistic: true
-    restore_value: true
-    initial_value: 800
-
-button:
-  - platform: template
-    name: "Pump 1 Dose"
-    on_press:
-      - lambda: |-
-          id(pump1_doser).dose_ml(
-            id(pump1_dose_ml).state,
-            id(pump1_steps_per_ml).state,
-            id(pump1_step_rate).state
-          );
-  - platform: template
-    name: "Pump 1 Calibration"
-    on_press:
-      - lambda: |-
-          id(pump1_doser).calibrate(
-            id(pump1_calibration_steps).state,
-            id(pump1_step_rate).state
-          );
-  - platform: template
-    name: "Pump 1 Stop"
-    on_press:
-      - lambda: id(pump1_doser).stop();
-  - platform: template
-    name: "Pump 2 Dose"
-    on_press:
-      - lambda: |-
-          id(pump2_doser).dose_ml(
-            id(pump2_dose_ml).state,
-            id(pump2_steps_per_ml).state,
-            id(pump2_step_rate).state
-          );
-  - platform: template
-    name: "Pump 2 Calibration"
-    on_press:
-      - lambda: |-
-          id(pump2_doser).calibrate(
-            id(pump2_calibration_steps).state,
-            id(pump2_step_rate).state
-          );            
-  - platform: template
-    name: "Pump 2 Stop"
-    on_press:
-      - lambda: id(pump2_doser).stop();    
+packages:
+  pump1: !include
+    file: packages/pump.yaml
+    vars:
+      pump_id: pump1
+      pump_name: "Pump 1"
+      step_pin: GPIO26
+      dir_pin: GPIO27
+      dir_inverted: true
+      sleep_pin: GPIO25
+      sleep_inverted: true
+  pump2: !include
+    file: packages/pump.yaml
+    vars:
+      pump_id: pump2
+      pump_name: "Pump 2"
+      step_pin: GPIO19
+      dir_pin: GPIO21
+      dir_inverted: true
+      sleep_pin: GPIO18
+      sleep_inverted: true
+  schedule1: !include
+    file: packages/schedule.yaml
+    vars:
+      pump_id: pump1
+      pump_name: "Pump 1"
+  schedule2: !include
+    file: packages/schedule.yaml
+    vars:
+      pump_id: pump2
+      pump_name: "Pump 2"

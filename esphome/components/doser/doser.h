@@ -47,6 +47,10 @@ public:
         stepper_->set_target(0);
         ESP_LOGI("DOSER", "Stop requested");
     }
+    bool is_busy() const {
+        if (!stepper_) return false;
+        return stepper_->current_position != stepper_->target_position;
+    }
 private:
     stepper::Stepper *stepper_{nullptr};
 };
