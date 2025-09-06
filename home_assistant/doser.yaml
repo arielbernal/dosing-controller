@@ -10,46 +10,37 @@ input_datetime:
     name: "Pump 1 Schedule 1 Time"
     has_date: false
     has_time: true
-    initial: "09:00:00"
   pump1_schedule_2_time:
     name: "Pump 1 Schedule 2 Time"
     has_date: false
     has_time: true
-    initial: "14:00:00"
   pump1_schedule_3_time:
     name: "Pump 1 Schedule 3 Time"
     has_date: false
     has_time: true
-    initial: "20:00:00"
 
   # Pump 2 schedules (time-only)
   pump2_schedule_1_time:
     name: "Pump 2 Schedule 1 Time"
     has_date: false
     has_time: true
-    initial: "09:30:00"
   pump2_schedule_2_time:
     name: "Pump 2 Schedule 2 Time"
     has_date: false
     has_time: true
-    initial: "14:30:00"
   pump2_schedule_3_time:
     name: "Pump 2 Schedule 3 Time"
     has_date: false
     has_time: true
-    initial: "20:30:00"
 
 input_boolean:
   # Dashboard toggles (pure HA UI state)
   pump1_show_schedules:
     name: "Pump 1 Show Schedules"
-    initial: false
   pump1_show_calibration:
     name: "Pump 1 Show Calibration"
-    initial: false
   pump2_show_schedules:
     name: "Pump 2 Show Schedules"
-    initial: false
   pump2_show_calibration:
     name: "Pump 2 Show Calibration"
-    initial: false
+

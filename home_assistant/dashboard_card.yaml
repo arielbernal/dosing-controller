@@ -9,12 +9,19 @@ cards:
     cards:
       - type: entities
         entities:
+          - entity: text.dosing_controller_pump_1_dosing_type
+            name: Dosing Type
           - entity: number.dosing_controller_pump_1_dose_amount_ml
             name: Dose Amount (mL)
           - entity: binary_sensor.dosing_controller_pump_1_busy
-            name: Running
-          - entity: sensor.dosing_controller_pump_1_last_trigger
-            name: Last Trigger
+            name: Status
+            icon: mdi:robot
+      - type: markdown
+        title: Last Trigger
+        content: |
+          ```
+          {{ states('sensor.dosing_controller_pump_1_last_trigger') }}
+          ```
       - type: horizontal-stack
         cards:
           - type: button
@@ -66,6 +73,7 @@ cards:
                   name: Enabled
                 - entity: number.dosing_controller_pump_1_schedule_1_amount_ml
                   name: Amount (mL)
+                  icon: mdi:cup-water
                 - entity: input_datetime.pump1_schedule_1_time
                   name: Time
             - type: horizontal-stack
@@ -107,6 +115,7 @@ cards:
                   name: Enabled
                 - entity: number.dosing_controller_pump_1_schedule_2_amount_ml
                   name: Amount (mL)
+                  icon: mdi:cup-water
                 - entity: input_datetime.pump1_schedule_2_time
                   name: Time
             - type: horizontal-stack
@@ -148,6 +157,7 @@ cards:
                   name: Enabled
                 - entity: number.dosing_controller_pump_1_schedule_3_amount_ml
                   name: Amount (mL)
+                  icon: mdi:cup-water
                 - entity: input_datetime.pump1_schedule_3_time
                   name: Time
             - type: horizontal-stack
@@ -258,12 +268,19 @@ cards:
     cards:
       - type: entities
         entities:
+          - entity: text.dosing_controller_pump_2_dosing_type
+            name: Dosing Type
           - entity: number.dosing_controller_pump_2_dose_amount_ml
             name: Dose Amount (mL)
           - entity: binary_sensor.dosing_controller_pump_2_busy
-            name: Running
-          - entity: sensor.dosing_controller_pump_2_last_trigger
-            name: Last Trigger
+            name: Status
+            icon: mdi:robot
+      - type: markdown
+        title: Last Trigger
+        content: |
+          ```
+          {{ states('sensor.dosing_controller_pump_2_last_trigger') }}
+          ```
       - type: horizontal-stack
         cards:
           - type: button
@@ -315,6 +332,7 @@ cards:
                   name: Enabled
                 - entity: number.dosing_controller_pump_2_schedule_1_amount_ml
                   name: Amount (mL)
+                  icon: mdi:cup-water
                 - entity: input_datetime.pump2_schedule_1_time
                   name: Time
             - type: horizontal-stack
@@ -356,6 +374,7 @@ cards:
                   name: Enabled
                 - entity: number.dosing_controller_pump_2_schedule_2_amount_ml
                   name: Amount (mL)
+                  icon: mdi:cup-water
                 - entity: input_datetime.pump2_schedule_2_time
                   name: Time
             - type: horizontal-stack
@@ -397,6 +416,7 @@ cards:
                   name: Enabled
                 - entity: number.dosing_controller_pump_2_schedule_3_amount_ml
                   name: Amount (mL)
+                  icon: mdi:cup-water
                 - entity: input_datetime.pump2_schedule_3_time
                   name: Time
             - type: horizontal-stack
@@ -446,56 +466,25 @@ cards:
                   name: Calibration Target (mL)
                 - entity: number.dosing_controller_pump_2_calibration_measured_ml
                   name: Calibration Measured (mL)
-            - type: conditional
-              conditions:
-                - entity: binary_sensor.dosing_controller_pump_2_busy
-                  state: 'on'
-              card:
-                type: horizontal-stack
-                cards:
-                  - type: button
-                    name: Running...
-                    icon: mdi:progress-clock
-                    entity: binary_sensor.dosing_controller_pump_2_busy
-                    tap_action:
-                      action: call-service
-                      service: button.press
-                      target:
-                        entity_id: button.dosing_controller_pump_2_calibration_run
-                  - type: button
-                    name: Save
-                    icon: mdi:content-save
-                    icon_height: 20px
-                    entity: button.dosing_controller_pump_2_calibration_apply
-                    tap_action:
-                      action: call-service
-                      service: button.press
-                      target:
-                        entity_id: button.dosing_controller_pump_2_calibration_apply
-            - type: conditional
-              conditions:
-                - entity: binary_sensor.dosing_controller_pump_2_busy
-                  state: 'off'
-              card:
-                type: horizontal-stack
-                cards:
-                  - type: button
-                    name: Calibrate
-                    icon: mdi:beaker-outline
-                    icon_height: 20px
-                    entity: binary_sensor.dosing_controller_pump_2_busy
-                    tap_action:
-                      action: call-service
-                      service: button.press
-                      target:
-                        entity_id: button.dosing_controller_pump_2_calibration_run
-                  - type: button
-                    name: Save
-                    icon: mdi:content-save
-                    icon_height: 20px
-                    entity: button.dosing_controller_pump_2_calibration_apply
-                    tap_action:
-                      action: call-service
-                      service: button.press
-                      target:
-                        entity_id: button.dosing_controller_pump_2_calibration_apply
+            - type: horizontal-stack
+              cards:
+                - type: button
+                  name: Calibrate
+                  icon: mdi:beaker-outline
+                  icon_height: 20px
+                  entity: button.dosing_controller_pump_2_calibration_run
+                  tap_action:
+                    action: call-service
+                    service: button.press
+                    target:
+                      entity_id: button.dosing_controller_pump_2_calibration_run
+                - type: button
+                  name: Save
+                  icon: mdi:content-save
+                  icon_height: 20px
+                  entity: button.dosing_controller_pump_2_calibration_apply
+                  tap_action:
+                    action: call-service
+                    service: button.press
+                    target:
+                      entity_id: button.dosing_controller_pump_2_calibration_apply

@@ -13,6 +13,7 @@ number:
     restore_value: true
     optimistic: true
     initial_value: 1.0
+    mode: box
   - platform: template
     id: ${pump_id}_schedule_1_hour
     name: "${pump_name} Schedule 1 Hour"
@@ -44,6 +45,7 @@ number:
     restore_value: true
     optimistic: true
     initial_value: 1.0
+    mode: box
   - platform: template
     id: ${pump_id}_schedule_2_hour
     name: "${pump_name} Schedule 2 Hour"
@@ -75,6 +77,7 @@ number:
     restore_value: true
     optimistic: true
     initial_value: 1.0
+    mode: box
   - platform: template
     id: ${pump_id}_schedule_3_hour
     name: "${pump_name} Schedule 3 Hour"
@@ -275,6 +278,8 @@ doser_scheduler:
     steps_per_ml: ${pump_id}_steps_per_ml
     speed: ${pump_id}_step_rate
     last_trigger: ${pump_id}_last_trigger
+    daily_total_global: ${pump_id}_daily_total
+    last_reset_day_global: ${pump_id}_last_reset_day
     schedules:
       # Schedule 1
       - ml: ${pump_id}_schedule_1_amount_ml

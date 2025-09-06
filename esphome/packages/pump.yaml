@@ -17,6 +17,7 @@ substitutions:
   cal_measured_initial: "10.0"
   min_calibration_steps: "10000"
   max_calibration_steps: "200000"
+  dosing_type_initial: ""
 
 # Stepper driver for ${pump_name}
 stepper:
@@ -53,6 +54,15 @@ globals:
     type: float
     restore_value: yes
     initial_value: ${steps_per_ml_initial}
+  # Daily total tracking
+  - id: ${pump_id}_daily_total
+    type: float
+    restore_value: true
+    initial_value: '0.0'
+  - id: ${pump_id}_last_reset_day
+    type: int
+    restore_value: true
+    initial_value: '0'
 
 # Controls for ${pump_name}
 number:
@@ -62,6 +72,7 @@ number:
     min_value: 0.1
     max_value: 10.0
     step: 0.1
+    mode: box
     optimistic: true
     restore_value: true
     initial_value: ${dose_initial}
@@ -117,7 +128,26 @@ button:
     name: "${pump_name} Dose"
     on_press:
       - lambda: |-
-          id(${pump_id}_last_trigger).publish_state("Dose");
+          auto now = id(sntp_time).now();
+          if (now.is_valid()) {
+            // Reset daily total if it's a new day
+            if (id(${pump_id}_last_reset_day) != now.day_of_year) {
+              id(${pump_id}_daily_total) = 0.0;
+              id(${pump_id}_last_reset_day) = now.day_of_year;
+            }
+            
+            // Add current dose to daily total
+            float dose_amount = id(${pump_id}_dose_ml).state;
+            id(${pump_id}_daily_total) += dose_amount;
+            
+            char buf[80];
+            const char* months[] = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", 
+                                  "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
+            snprintf(buf, sizeof(buf), "%s %02d %02d:%02d - Manual - %.1fmL\nDaily Total: %.1fmL", 
+                months[now.month - 1], now.day_of_month, 
+                now.hour, now.minute, dose_amount, id(${pump_id}_daily_total));
+            id(${pump_id}_last_trigger).publish_state(buf);
+          }
           id(${pump_id}_doser).dose_ml(
             id(${pump_id}_dose_ml).state,
             id(${pump_id}_steps_per_ml).state,
@@ -131,7 +161,6 @@ button:
           // capture current SPM as base and arm apply
           id(${pump_id}_calibration_spm_base) = id(${pump_id}_steps_per_ml).state;
           id(${pump_id}_calibration_ready) = true;
-          id(${pump_id}_last_trigger).publish_state("Calibrate");
           id(${pump_id}_doser).dose_ml(
             id(${pump_id}_cal_expected_ml).state,
             id(${pump_id}_steps_per_ml).state,
@@ -143,7 +172,6 @@ button:
     on_press:
       - lambda: |-
           if (!id(${pump_id}_calibration_ready)) {
-            ESP_LOGW("CAL", "Apply ignored: calibration not armed. Run calibration first.");
             return;
           }
           const float expected = id(${pump_id}_cal_expected_ml).state;
@@ -157,15 +185,12 @@ button:
             id(${pump_id}_steps_per_ml).publish_state(new_spm);
             id(${pump_id}_steps_per_ml_store) = new_spm;  // persist
             id(${pump_id}_calibration_ready) = false;  // disarm until next run
-          } else {
-            ESP_LOGW("CAL", "Apply ignored: invalid measured volume (%.3f) or base SPM (%.1f).", measured, base_spm);
           }
 
   - platform: template
     name: "${pump_name} Stop"
     on_press:
       - lambda: |-
-          id(${pump_id}_last_trigger).publish_state("Stopped");
           id(${pump_id}_doser).stop();
 
 binary_sensor:
@@ -195,6 +220,15 @@ text_sensor:
     id: ${pump_id}_last_trigger
     name: "${pump_name} Last Trigger"
     icon: mdi:information-outline
+
+text:
+  - platform: template
+    id: ${pump_id}_dosing_type
+    name: "${pump_name} Dosing Type"
+    mode: text
+    optimistic: true
+    restore_value: true
+    initial_value: ${dosing_type_initial}
 
 switch:
   - platform: template

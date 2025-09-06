@@ -1,7 +1,7 @@
 import esphome.codegen as cg
 import esphome.config_validation as cv
 from esphome.const import CONF_ID
-from esphome.components import number, switch, time, text_sensor
+from esphome.components import number, switch, time, text_sensor, globals
 
 # Reuse Doser class from the existing custom component
 from ..doser import Doser
@@ -18,6 +18,8 @@ CONF_STEPS_PER_ML = "steps_per_ml"
 CONF_SPEED = "speed"
 CONF_SCHEDULES = "schedules"
 CONF_LAST_TRIGGER = "last_trigger"
+CONF_DAILY_TOTAL_GLOBAL = "daily_total_global"
+CONF_LAST_RESET_DAY_GLOBAL = "last_reset_day_global"
 
 SCHEDULE_SCHEMA = cv.Schema(
     {
@@ -44,6 +46,9 @@ CONFIG_SCHEMA = cv.Schema(
         cv.Required(CONF_SPEED): cv.use_id(number.Number),
         cv.Required(CONF_SCHEDULES): cv.All(cv.ensure_list(SCHEDULE_SCHEMA), cv.Length(min=1, max=3)),
         cv.Optional(CONF_LAST_TRIGGER): cv.use_id(text_sensor.TextSensor),
+        # Accept base globals component; values may still be restored via restore_value
+        cv.Optional(CONF_DAILY_TOTAL_GLOBAL): cv.use_id(globals.GlobalsComponent),
+        cv.Optional(CONF_LAST_RESET_DAY_GLOBAL): cv.use_id(globals.GlobalsComponent),
     }
 )
 
@@ -81,3 +86,11 @@ async def to_code(config):
     if CONF_LAST_TRIGGER in config:
         lt = await cg.get_variable(config[CONF_LAST_TRIGGER])
         cg.add(var.set_last_trigger(lt))
+
+    if CONF_DAILY_TOTAL_GLOBAL in config:
+        dt = await cg.get_variable(config[CONF_DAILY_TOTAL_GLOBAL])
+        cg.add(var.set_daily_total_global(dt))
+
+    if CONF_LAST_RESET_DAY_GLOBAL in config:
+        lrd = await cg.get_variable(config[CONF_LAST_RESET_DAY_GLOBAL])
+        cg.add(var.set_last_reset_day_global(lrd))

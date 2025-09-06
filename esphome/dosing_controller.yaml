@@ -6,17 +6,20 @@ esp32:
   board: esp32dev
 
 wifi:
-  ssid: YOUR_SSID
-  password: YOUR_PASSWORDs
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
   ap:
     ssid: "Dosing Pump Setup"
-    password: "pump1234"
+    password: !secret ap_password
 
 logger:
 api:
+  encryption:
+    key: !secret api_encryption_key
 
 ota:
   platform: esphome
+  password: !secret ota_password
 
 captive_portal:
 
